@@ -6,7 +6,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\InertiaTestController;
 use App\Http\Controllers\ItemController;
 
-Route::resource('item', ItemController::class)
+Route::resource('items', ItemController::class)
 ->middleware(['auth', 'verified']);
 
 
