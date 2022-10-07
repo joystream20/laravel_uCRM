@@ -56,7 +56,11 @@
                                 </thead>
                                 <tbody>
                                   <tr v-for="customer in customers.data" :key="customer.id">
-                                    <td class="border-gray-200 border-b-2 px-4 py-4">{{ customer.id }}</td>
+                                    <td class="border-gray-200 border-b-2 px-4 py-4">
+                                      <Link class="text-blue-500" :href="route('customers.show',{customer:customer.id})">
+                                      {{ customer.id }}
+                                      </Link>
+                                    </td>
                                     <td class="border-gray-200 border-b-2 px-4 py-4">{{ customer.name }}</td>
                                     <td class="border-gray-200 border-b-2 px-4 py-4">{{ customer.kana }}</td>
                                     <td class="border-gray-200 border-b-2 px-4 py-4 text-lg text-gray-900">{{ customer.tel }}</td>

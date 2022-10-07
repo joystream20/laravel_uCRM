@@ -1,0 +1,166 @@
+<script setup>
+  import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+  import { Head } from '@inertiajs/inertia-vue3';
+  import ValidationErrors from '@/Components/ValidationErrors.vue';
+  import { onMounted, reactive, ref, computed } from 'vue'
+  import { Inertia } from '@inertiajs/inertia';
+  import FormValidationErrors from '@/Components/ValidationErrors.vue';
+  import { getToday  } from '@/common';
+  import Micromodal from '@/Components/MicroModal.vue';
+import MicroModal from '@/Components/MicroModal.vue';
+
+  onMounted(() => {
+form.date = getToday()
+
+// console.log(props.items);
+props.items.forEach( item => {
+  itemList.value.push({
+    id:item.id,
+    name: item.name,
+    price: item.price,
+    quantity: 0
+  })
+})
+})
+
+const props = defineProps({
+  // 'customers': Array,
+  'items': Array
+})
+
+const itemList = ref([])
+
+const setCustomerId = id => {
+  form.customer_id = id
+}
+
+const form = reactive({
+  date: null,
+  customer_id: null,
+  status : true,
+  items: []
+})
+
+const quantity = ["0","1","2","3","4","5","6","7","8","9"]
+
+const totalPrice = computed(() => {
+  let total = 0;
+  itemList.value.forEach( item => {
+    total += item.price * item.quantity
+  })
+  return total
+})
+
+const storePurchase = () => {
+  itemList.value.forEach( item => {
+    if(item.quantity > 0){
+      form.items.push({
+        id: item.id,
+        quantity: item.quantity
+      })
+    }
+  })
+  Inertia.post(route('purchases.store'), form)
+}
+ 
+  </script>
+  
+  <template>
+      <Head title="購入画面" />
+  
+    <AuthenticatedLayout>
+      <template #header>
+          <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+              購入画面
+          </h2>
+      </template>
+
+      <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 bg-white border-b border-gray-200">
+                
+              <FormValidationErrors class="mb-4" />
+
+              <section class="text-gray-600 body-font relative">
+                <form @submit.prevent="storePurchase">
+                <div class="container px-4 py-4 mx-auto">
+                  
+                <div class="lg:w-1/2 md:w-2/3 mx-auto">
+                  <div class="flex flex-wrap -m-2">
+
+                  <div class="p-2  w-full">
+                    <div class="relative">
+                      <label for="date" class="leading-7 text-sm text-gray-600">Date</label>
+                      <input type="date" name="date" v-model="form.date" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                    
+                    </div>
+                  </div>
+                    
+                  <div class="p-2 w-full">
+                    <div class="relative">
+                      
+                      <label for="customer" class="leading-7 text-sm text-gray-600">Member</label>
+                      <MicroModal @update:customerId="setCustomerId"/>
+                    </div>
+                  </div>
+
+                  <div class="p-2 w-full mx-auto overflow-auto">
+                    <table class="w-full">
+                      <thead class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                        <tr>
+                          <th class="py-2 px-4">id</th>
+                          <th class="py-2 px-4">商品名</th>
+                          <th class="py-2 px-4">金額</th>
+                          <th class="py-2 px-4">数量</th>
+                          <th class="py-2 px-4">金額</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="item in itemList">
+                        <td class="p-4">{{ item.id }}</td>
+                        <td class="p-4">{{ item.name }}</td>
+                        <td class="p-4">{{ item.price }}</td>
+                        <td class="p-4">
+                          <select name="quantity" v-model="item.quantity">
+                          <option v-for="q in quantity" :value="q">{{ q }}</option>
+                          </select>
+                        </td>
+                        <td>{{ item.price * item.quantity}}</td>
+                      </tr>
+                      </tbody>
+                  
+                    </table>
+                    
+                  </div>
+
+                    <div class="p-2 w-full">
+                      <div class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                        合計 {{ totalPrice }}円
+                      </div>
+                    </div>
+
+                    <div class="p-2 w-full">
+                      <div class="">
+                        <button class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-6">登録する</button>
+                        
+                      </div>
+                    </div>
+                    
+                  </div>
+                </div>
+                </div>
+              </form>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </AuthenticatedLayout>
+  </template>
+  
+  <style>
+    .flex-wrap{
+      flex-wrap:wrap;
+    }
+  </style>
